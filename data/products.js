@@ -656,5 +656,22 @@ const products = [
       "apparel",
       "mens"
     ]
+  }, {
+    id: "bc2847e9-96632-403f-b78899-57fdaaaaa55",
+    image: "images/products/backpack.jpg",
+    name: "Regular Backpack",
+    rating: {
+      stars: 4.5,
+      count: 985
+    },
+    priceCents: 2299,
+    keywords: [
+      "backpack",
+      "bag",
+      "books",
+    ]
   }
+
+
+
 ];
