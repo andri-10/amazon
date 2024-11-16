@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-const cart = [];
-=======
 export const cart = [{
   productId: 'e43638ce-6aa0-4b85-b27f-e1d07eb678c6',
   quantity: 2
@@ -32,4 +29,3 @@ export function addToCart(productId){
     });
   }
 }
->>>>>>> a5e5360c4bfc5954bed6fe7823121bd8344b4628
