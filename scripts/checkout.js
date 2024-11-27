@@ -1,8 +1,8 @@
-import {cart, removeFromCart} from '../data/cart.js'
+import {cart, removeFromCart, calculateCartQuantity, updateQuantity} from '../data/cart.js'
 import {products} from '../data/products.js'
 import {formatCurrency} from './utils/money.js'; //every time it has to start with ./ for modules
 
-
+//Checkout Items
 let cartSummaryHTML = '';
 
 cart.forEach((cartItem) => {
@@ -16,9 +16,6 @@ cart.forEach((cartItem) => {
       matchingProduct = product;
     }
   });
-
-
-  console.log(matchingProduct);
 
   cartSummaryHTML += `
   <div class="cart-item-container
@@ -39,11 +36,13 @@ cart.forEach((cartItem) => {
         </div>
         <div class="product-quantity">
           <span>
-            Quantity: <span class="quantity-label">${cartItem.quantity}</span>
+            Quantity: <span class="quantity-label js-quantity-label">${cartItem.quantity}</span>
           </span>
-          <span class="update-quantity-link link-primary">
+          <span class="update-quantity-link link-primary js-update-link" data-product-id="${matchingProduct.id}">
             Update
           </span>
+          <input class = "quantity-input js-quantity-input">
+          <span class="save-quantity-link  link-primary js-save-link" data-product-id="${matchingProduct.id}"> Save </span> 
           <span class="delete-quantity-link link-primary js-delete-link" data-product-id="${matchingProduct.id}"> 
             Delete
           </span>
@@ -94,21 +93,75 @@ cart.forEach((cartItem) => {
   `
 });
 
+updateCheckoutItems();
 
 document.querySelector('.js-order-summary')
   .innerHTML = cartSummaryHTML;
-
 
   document.querySelectorAll('.js-delete-link').forEach((link) => {
     link.addEventListener('click', () => {
       const productID = link.dataset.productId;
       removeFromCart(productID);
-      console.log(cart);
 
       //Remove Product from Page
       const container = document.querySelector(`.js-cart-item-container-${productID}`);
       container.remove();
+      updateCheckoutItems();
 
-
-    })
+    });
   }) 
+
+
+  document.querySelectorAll('.js-update-link').forEach((link) => {
+    link.addEventListener('click', () => {
+      const productID = link.dataset.productId;
+      const container = document.querySelector(`.js-cart-item-container-${productID}`);
+      container.classList.add('is-editing-quantity');
+    });
+  }) 
+
+  //Save New Quantity with Click
+  document.querySelectorAll('.js-save-link').forEach((link) => {
+    link.addEventListener('click', () => {
+      const productID = link.dataset.productId;
+      const container = document.querySelector(`.js-cart-item-container-${productID}`);
+      container.classList.remove('is-editing-quantity');
+  
+      const input = container.querySelector('.js-quantity-input');
+      const newQuantity = Number(input.value);
+
+      if(newQuantity >= 0 && newQuantity <= 1000){
+      updateQuantity(productID, newQuantity);
+      const quantityLabel = container.querySelector('.js-quantity-label');
+      quantityLabel.innerHTML = newQuantity;
+      updateCheckoutItems();
+      } else alert("The input quantity is high or invalid.");
+
+    });
+    
+  });
+
+  //Save New Quantity with Enter Key
+  document.querySelectorAll('.js-quantity-input').forEach((input) => {
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') { // Check if the Enter key was pressed
+        const container = input.closest('.cart-item-container'); // Find the parent container
+        const productID = container.querySelector('.js-save-link').dataset.productId;
+        const newQuantity = Number(input.value);
+  
+        if(newQuantity >= 0 && newQuantity <= 1000){
+          updateQuantity(productID, newQuantity);
+          
+          const quantityLabel = container.querySelector('.js-quantity-label');
+          quantityLabel.innerHTML = newQuantity;
+          
+          updateCheckoutItems();
+          } else alert("The input quantity is high or invalid.");
+      }
+    });
+  });
+  
+
+  function updateCheckoutItems(){
+    document.querySelector('.js-checkout-items').innerHTML = calculateCartQuantity();
+  }
