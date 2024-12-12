@@ -1,3 +1,5 @@
+import { renderPaymentSummary } from "../scripts/checkout/paymentSummary.js";
+
 export const deliveryOptions = [{
   id: '1',
   deliveryDays: 7,

@@ -3,6 +3,7 @@ import {products, getProduct} from '../../data/products.js'
 import {formatCurrency} from '../utils/money.js'; //every time it has to start with ./ for modules
 import {deliveryOptions, getDeliveryOption} from '../../data/deliveryOptions.js'
 import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js' //ESM Version
+import { renderPaymentSummary } from './paymentSummary.js';
 
 
 export function renderOrderSummary(){
@@ -119,6 +120,7 @@ function deliveryOptionsHTML(matchingProduct, cartItem){
       link.addEventListener('click', () => {
         const productID = link.dataset.productId;
         removeFromCart(productID);
+        renderPaymentSummary();
 
         //Remove Product from Page
         const container = document.querySelector(`.js-cart-item-container-${productID}`);
@@ -154,6 +156,8 @@ function deliveryOptionsHTML(matchingProduct, cartItem){
         updateCheckoutItems();
         } else alert("The input quantity is high or invalid.");
 
+        renderPaymentSummary();
+
       });
       
     });
@@ -188,6 +192,7 @@ function deliveryOptionsHTML(matchingProduct, cartItem){
         element.addEventListener('click', () => {
           const {productId, deliveryOptionId} = element.dataset;
           updateDeliveryOption(productId, deliveryOptionId);
+          renderPaymentSummary();
           renderOrderSummary();
         });
     });
